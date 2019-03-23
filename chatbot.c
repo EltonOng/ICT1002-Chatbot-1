@@ -40,10 +40,12 @@
  * returned by these functions at the start of each line.
  */
  
+#include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "chat1002.h"
- 
+
  
 /*
  * Get the name of the chatbot.
@@ -150,15 +152,24 @@ int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
  *  intent - the intent
  *
  * Returns:
- *  1, if the intent is "load"
- *  0, otherwise
+ *  0, if the intent is "load"
+ *  -2, otherwise
  */
 int chatbot_is_load(const char *intent) {
-	
-	/* to be implemented */
-	
-	return 0;
-	
+	int i = 0;
+	char uppercaseintent[MAX_INTENT];
+
+	while(intent[i]) {							// Make Input Intent Uppercase
+    	uppercaseintent[i] = toupper(intent[i]);
+    	i++;
+   	}
+
+	if (strcmp(uppercaseintent, "LOAD")){		// Check if Intent is to LOAD
+		return KB_OK;							// Return 0 if Intent is to LOAD
+	}
+	else {
+		return KB_INVALID;						// Return -2 if intent not to LOAD
+	}
 }
 
 
@@ -169,13 +180,58 @@ int chatbot_is_load(const char *intent) {
  * function is used.
  *
  * Returns:
- *   0 (the chatbot always continues chatting after loading knowledge)
+ *   0  (the chatbot always continues chatting after loading knowledge, even if file not found
  */
 int chatbot_do_load(int inc, char *inv[], char *response, int n) {
 	
-	/* to be implemented */
-	 
-	return 0;
+    //Debug Statement to Check what is Parsed.
+    printf("Inc: %d\nInv: %s\nResponse: %s\nN: %d\n", inc, inv[0], response, n);
+
+    if (inv[1] == NULL){
+        strcpy(response,"No file inputted!");					// Error Response for No Input for File
+    }
+    else {
+        FILE *file;
+        char *splitoutput;
+        int noofentries;
+        size_t buffer_size = MAX_INTENT;                              
+        char *buffer = malloc(buffer_size * sizeof(char));      // Allocate a Dynamic Buffer for File Line
+        char intent[MAX_INPUT], entity[MAX_ENTITY], response[MAX_RESPONSE];
+        const char ch = '=';
+
+        if (file = fopen(inv[1], "r")){							// Open File for Reading
+            strcpy(response,"");								// Reset Response as no ERROR
+            noofentries = knowledge_read(file);					// Send to knowledge_read to get Number of lines to parse.
+            while(getline(&buffer, &buffer_size, file) != KB_NOTFOUND)
+            {   
+                if (strstr(buffer, "what")){
+                    strcpy(intent, "WHAT");						// Set Intent to WHAT until Next Intent Found
+                }
+                else if (strstr(buffer, "where")){
+                    strcpy(intent, "WHERE");					// Set Intent to WHERE until Next Intent Found
+                }
+                else if (strstr(buffer, "who")){
+                    strcpy(intent, "WHO");						// Set Intent to WHO until Next Intent Found
+                }
+                if (strchr(buffer,ch)){
+                    splitoutput = strtok(buffer, "=");			// Obtain the Entity from line of file
+                    strcpy(entity, splitoutput);
+                    splitoutput = strtok (NULL, "=");			// Obtain the Response from line of file
+                    strcpy(response, splitoutput);
+
+                    knowledge_put(intent, entity, response);	// Send to Knowledge_Put to insert into List
+                }
+            }
+            printf("%d entires inserted into lists\n", noofentries);
+            fflush(stdout);										// Flush any unecessary remaining input
+            free(buffer);										// Free buffer dynamic memory
+            fclose(file);										// Close file pointer
+        }
+        else{
+            strcpy(response,"File not found!");					// Error response for File Not Found
+        }
+    }
+    return KB_OK;
 	 
 }
 

@@ -73,10 +73,21 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
  * Returns: the number of entity/response pairs successful read from the file
  */
 int knowledge_read(FILE *f) {
-	
-	/* to be implemented */
-	
-	return 0;
+    int linesCount;
+    const char ch = '=';
+
+    size_t buffer_size = MAX_INPUT;                              
+    char *buffer = malloc(buffer_size * sizeof(char));      // Allocate a Dynamic Buffer for File Line
+    while(getline(&buffer, &buffer_size, f) != KB_NOTFOUND)
+    {      
+        if (strchr(buffer,ch)){                             // Valid Entires have '=', checks how many Valid entries
+            linesCount++;
+        }
+    }
+    fflush(stdout);
+    free(buffer);                                           // Free Buffer Dyanmic Memory
+    fseek(f, 0, SEEK_SET);                                  // Reset File Pointer to Start
+    return linesCount;                                      // Return the number of valid entries
 }
 
 

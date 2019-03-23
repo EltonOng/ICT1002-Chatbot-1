@@ -1,5 +1,6 @@
 //
 // Created by Javis on 3/20/2019.
+// Edited by Jordan
 //
 #include "cheader.h"
 
@@ -162,9 +163,119 @@ int knowledge_put(const char *uIntent, const char *uEntity, const char *uRespons
     /* ===================================================================================================================================== */
 }
 
+/*
+ * Read a knowledge base from a file.
+ *
+ * Input:
+ *   f - the file
+ *
+ * Returns: the number of entity/response pairs successful read from the file
+ */
+int knowledge_read(FILE *f) {
+    int linesCount;
+    const char ch = '=';
 
+    size_t buffer_size = MAX_INPUT;                              
+    char *buffer = malloc(buffer_size * sizeof(char));      // Allocate a Dynamic Buffer for File Line
+    while(getline(&buffer, &buffer_size, f) != KB_NOTFOUND)
+    {      
+        if (strchr(buffer,ch)){                             // Valid Entires have '=', checks how many Valid entries
+            linesCount++;
+        }
+    }
+    fflush(stdout);
+    free(buffer);                                           // Free Buffer Dyanmic Memory
+    fseek(f, 0, SEEK_SET);                                  // Reset File Pointer to Start
+    return linesCount;                                      // Return the number of valid entries
+}
 
+/*
+ * Determine whether an intent is LOAD.
+ *
+ * Input:
+ *  intent - the intent
+ *
+ * Returns:
+ *  0, if the intent is "load"
+ *  -2, otherwise
+ */
+int chatbot_is_load(const char *intent) {
+    int i = 0;
+    char uppercaseintent[MAX_INTENT];
 
+    while(intent[i]) {                          // Make Input Intent Uppercase
+        uppercaseintent[i] = toupper(intent[i]);
+        i++;
+    }
+
+    if (strcmp(uppercaseintent, "LOAD")){       // Check if Intent is to LOAD
+        return KB_OK;                           // Return 0 if Intent is to LOAD
+    }
+    else {
+        return KB_INVALID;                      // Return -2 if intent not to LOAD
+    }
+}
+
+/*
+ * Load a chatbot's knowledge base from a file.
+ *
+ * See the comment at the top of the file for a description of how this
+ * function is used.
+ *
+ * Returns:
+ *   0  (the chatbot always continues chatting after loading knowledge, even if file not found
+ */
+int chatbot_do_load(int inc, char *inv[], char *response, int n) {
+    
+    //Debug Statement to Check what is Parsed.
+    printf("Inc: %d\nInv: %s\nResponse: %s\nN: %d\n", inc, inv[0], response, n);
+
+    if (inv[1] == NULL){
+        strcpy(response,"No file inputted!");                   // Error Response for No Input for File
+    }
+    else {
+        FILE *file;
+        char *splitoutput;
+        int noofentries;
+        size_t buffer_size = MAX_INTENT;                              
+        char *buffer = malloc(buffer_size * sizeof(char));      // Allocate a Dynamic Buffer for File Line
+        char intent[MAX_INPUT], entity[MAX_ENTITY], response[MAX_RESPONSE];
+        const char ch = '=';
+
+        if (file = fopen(inv[1], "r")){                         // Open File for Reading
+            strcpy(response,"");                                // Reset Response as no ERROR
+            noofentries = knowledge_read(file);                 // Send to knowledge_read to get Number of lines to parse.
+            while(getline(&buffer, &buffer_size, file) != KB_NOTFOUND)
+            {   
+                if (strstr(buffer, "what")){
+                    strcpy(intent, "WHAT");                     // Set Intent to WHAT until Next Intent Found
+                }
+                else if (strstr(buffer, "where")){
+                    strcpy(intent, "WHERE");                    // Set Intent to WHERE until Next Intent Found
+                }
+                else if (strstr(buffer, "who")){
+                    strcpy(intent, "WHO");                      // Set Intent to WHO until Next Intent Found
+                }
+                if (strchr(buffer,ch)){
+                    splitoutput = strtok(buffer, "=");          // Obtain the Entity from line of file
+                    strcpy(entity, splitoutput);
+                    splitoutput = strtok (NULL, "=");           // Obtain the Response from line of file
+                    strcpy(response, splitoutput);
+
+                    knowledge_put(intent, entity, response);    // Send to Knowledge_Put to insert into List
+                }
+            }
+            printf("%d entires inserted into lists\n", noofentries);
+            fflush(stdout);                                     // Flush any unecessary remaining input
+            free(buffer);                                       // Free buffer dynamic memory
+            fclose(file);                                       // Close file pointer
+        }
+        else{
+            strcpy(response,"File not found!");                 // Error response for File Not Found
+        }
+    }
+    return KB_OK;
+}
 
 
 /*
@@ -176,34 +287,40 @@ void knowledge_reset() {
     /* ------------------------------- If 'WHO' linked-list is not empty (headofWHO not pointing to NULL) ---------------------------------- */
     if (headofWHO!=NULL){
         /* While not end of linked-list, delete/free memory of node pointed by headofWHO currently */
+        response_node *temp = headofWHO;
         do{
-            printf("\nRemoving Node '%s' '%s'",headofWHO->intent,headofWHO->entity);
+            printf("\nRemoving Node '%s' '%s'",temp->intent,temp->entity);
+            temp = temp->next;
             free(headofWHO);                        /* Free memory allocation of node currently pointed to by headofWHO */
-            headofWHO=headofWHO->next;              /* Point headofWHO to the next node (will point to NULL if current node is last in the list) */
-        }while(headofWHO);
+            headofWHO=temp;              /* Point headofWHO to the next node (will point to NULL if current node is last in the list) */
+        }while(temp != NULL);
     }
 
     /* ------------------------------ If 'WHAT' linked-list is not empty (headofWHAT not pointing to NULL) --------------------------------- */
     if (headofWHAT!=NULL){
         /* While not end of linked-list, delete/free memory of node pointed by headofWHAT currently */
+        response_node *temp = headofWHAT;
         do{
-            printf("\nRemoving Node '%s' '%s'",headofWHAT->intent,headofWHAT->entity);
+            printf("\nRemoving Node '%s' '%s'",temp->intent,temp->entity);
+            temp = temp->next;
             free(headofWHAT);                        /* Free memory allocation of node currently pointed to by headofWHAT */
-            headofWHAT=headofWHAT->next;             /* Point headofWHAT to the next node (will point to NULL if current node is last in the list) */
-        }while(headofWHAT);
+            headofWHAT=temp;             /* Point headofWHAT to the next node (will point to NULL if current node is last in the list) */
+        }while(temp != NULL);
     }
 
     /* ------------------------------ If 'WHERE' linked-list is not empty (headofWHERE not pointing to NULL) --------------------------------- */
     if (headofWHERE!=NULL){
         /* While not end of linked-list, delete/free memory of node pointed by headofWHERE currently */
+        response_node *temp = headofWHERE;
         do{
-            printf("\nRemoving Node '%s' '%s'",headofWHERE->intent,headofWHERE->entity);
+            printf("\nRemoving Node '%s' '%s'",temp->intent,temp->entity);
+            temp = temp->next;
             free(headofWHERE);                       /* Free memory allocation of node currently pointed to by headofWHERE */
-            headofWHERE=headofWHERE->next;           /* Point headofWHERE to the next node (will point to NULL if current node is last in the list) */
-        }while(headofWHERE);
+            headofWHERE=temp;           /* Point headofWHERE to the next node (will point to NULL if current node is last in the list) */
+        }while(temp != NULL);
     }
 
-    printf("\nEnd of knowledge_reset() function...");
+    printf("\nEnd of knowledge_reset() function...\n");
     /* ===================================================================================================================================== */
 }
 
@@ -243,6 +360,12 @@ int main(){
         /* ---------------------------------------------------------------------------------------------- */
         /* Call function to insert_node() */
         returncode = knowledge_get(userintent,userentity,chatbot_response);
+
+        // /* Call Function to Process_File() UNCOMMENT THIS AND COMMENT ABOVE IF WANT TO SEE RESULT */
+        // char * inv[MAX_INPUT];
+        // inv[0] = "LOAD";
+        // inv[1] = "sample.ini";
+        // chatbot_do_load(2, inv, userresponse, MAX_RESPONSE);
 
         if (returncode==0){                                         /* If a Response (match) was found for inputted Intent and Entity */
             printf("\n----------------------------------------");
