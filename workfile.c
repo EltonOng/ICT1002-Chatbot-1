@@ -110,57 +110,127 @@ int knowledge_get(const char *Intent, const char *Entity, char *response){
  */
 int knowledge_put(const char *uIntent, const char *uEntity, const char *uResponse){
     /* ===================================================================================================================================== */
-    response_node *temp = malloc(sizeof(response_node));            /* Create node first */
+    char temp_responseBUFFER[MAX_RESPONSE];                                  /* Create a temp buffer for response (needed to call knowledge_get()) */
 
-    if (temp==NULL){                                                /* If not enough memory (memory failure) */
-        return KB_NOMEM;                                            /* Return code 'KB_NOMEM' which is of value -4 */
+    int get_code = knowledge_get(uIntent,uEntity,temp_responseBUFFER);       /* Call knowledge_get() to check if the Intent and Entity pair already exists */
+    memset(temp_responseBUFFER,'\0',MAX_RESPONSE);                           /* Clear the temp_response buffer */
+
+    /* Return KB_INVALID if intent is invalid */
+    if (abs(get_code)==2){
+        return KB_INVALID;
     }
 
-    /* -------------------------------------------------- Intent == 'WHO' ----------------------------------------------------------------- */
-    if (strcmp(uIntent,"WHO") == 0){                    /* If intent is 'WHO' */
-        strcpy(temp->intent,uIntent);                                /* Set node's intent attribute to uIntent */
-        strcpy(temp->entity,uEntity);                                /* Set node's entity attribute to uEntity */
-        strcpy(temp->response,uResponse);                            /* Set node's response attribute to uResponse*/
-        temp->next = headofWHO;                                      /* Set node to be created to point to where the head of the WHO linked-list is pointing to */
-        headofWHO = temp;                                            /* Set 'headofWHO' to point to where temp is */
+    /* Else, either overwrite or insert the node depending on the return code, and the Intent */
+    else{
+        /* -------------------------------------------------- Intent == 'WHO' ----------------------------------------------------------------- */
+        if (strcmp(uIntent,"WHO") == 0){                    /* If intent is 'WHO' */
+            //  If Intent and Entity pair already exists, iterate the 'WHO' linked-list & overwrite current response data
+            if (abs(get_code)==0){
+                whoIterator = headofWHO;                                     /* Point the whoIterator to head of 'WHO' linked-list */
+                do{                                                          /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
+                    if (strcmp(whoIterator->entity,uEntity)==0){             /* If a node with the same Entity exists */
+                        strncpy(whoIterator->response, uResponse, MAX_RESPONSE);        /* Overwrite the existing response */
+                        printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n",uIntent, uEntity, uResponse);
+                        return KB_OK;                                        /* Return code 'KB_OK', which is of value 0 */
+                    }
 
-        /* Testing code */
-        printf("\nAdding Intent of headofWHO: '%s'\nAdding Entity of headofWHO: '%s'\nAdding Response of headofWHO: '%s'\n",headofWHO->intent, headofWHO->entity, headofWHO->response);
-        return KB_OK;                                                /* Return code 'KB_OK' which is of value 0 */
+                    whoIterator=whoIterator->next;                           /* If program did not enter the if statement (no entity match), point the iterator to the next node */
+                }while(whoIterator);
+            }
+
+                //  If no existing record of Intent and Entity exists, create & insert the node to the head of 'WHO' linked-list */
+            else if (abs(get_code)==1) {
+                response_node *temp = malloc(sizeof(response_node));         /* Create node first */
+                if (temp==NULL){                                             /* If not enough memory (memory failure) */
+                    return KB_NOMEM;                                         /* Return code 'KB_NOMEM' which is of value -4 */
+                }
+
+                strcpy(temp->intent,uIntent);                                /* Set node's intent attribute to uIntent */
+                strcpy(temp->entity,uEntity);                                /* Set node's entity attribute to uEntity */
+                strcpy(temp->response,uResponse);                            /* Set node's response attribute to uResponse*/
+                temp->next = headofWHO;                                      /* Set node to be created to point to where the head of the WHO linked-list is pointing to */
+                headofWHO = temp;                                            /* Set 'headofWHO' to point to where temp is */
+
+                /* Testing code */
+                printf("\nAdding Intent of headofWHO: '%s'\nAdding Entity of headofWHO: '%s'\nAdding Response of headofWHO: '%s'\n",headofWHO->intent, headofWHO->entity, headofWHO->response);
+                return KB_OK;                                                /* Return code 'KB_OK' which is of value 0 */
+            }
+        }
+
+        /* -------------------------------------------------- Intent == 'WHAT' ----------------------------------------------------------------- */
+        else if (strcmp(uIntent,"WHAT") == 0) {              /* If intent is 'WHAT' */
+            //  If Intent and Entity pair already exists, iterate the 'WHAT' linked-list & overwrite current response data
+            if (abs(get_code) == 0) {
+                whatIterator = headofWHAT;                                    /* Point the whatIterator to head of 'WHAT' linked-list */
+                do {                                                          /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
+                    if (strcmp(whatIterator->entity, uEntity) == 0) {         /* If a node with the same Entity exists */
+                        strncpy(whatIterator->response, uResponse, MAX_RESPONSE);        /* Overwrite the existing response */
+                        printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n", uIntent, uEntity, uResponse);
+                        return KB_OK;                                         /* Return code 'KB_OK', which is of value 0 */
+                    }
+
+                    whatIterator = whatIterator->next;                        /* If program did not enter the if statement (no entity match), point the iterator to the next node */
+                } while (whatIterator);
+            }
+
+                //  If no existing record of Intent and Entity exists, create & insert the node to the head of 'WHAT' linked-list */
+            else if (abs(get_code) == 1) {
+                response_node *temp = malloc(sizeof(response_node));          /* Create node first */
+                if (temp == NULL) {                                           /* If not enough memory (memory failure) */
+                    return KB_NOMEM;                                          /* Return code 'KB_NOMEM' which is of value -4 */
+                }
+
+                strcpy(temp->intent, uIntent);                                /* Set node's intent attribute to uIntent */
+                strcpy(temp->entity, uEntity);                                /* Set node's entity attribute to uEntity */
+                strcpy(temp->response, uResponse);                            /* Set node's response attribute to uResponse*/
+                temp->next = headofWHAT;                                      /* Set node to be created to point to where the head of the WHAT linked-list is pointing to */
+                headofWHAT = temp;                                            /* Set 'headofWHAT' to point to where temp is */
+
+                /* Testing code */
+                printf("\nAdding Intent of headofWHAT: '%s'\nAdding Entity of headofWHAT: '%s'\nAdding Response of headofWHAT: '%s'\n", headofWHAT->intent, headofWHAT->entity, headofWHAT->response);
+                return KB_OK;                                                 /* Return code 'KB_OK' which is of value 0 */
+            }
+        }
+
+        /* ------------------------------------------------- Intent == 'WHERE' ----------------------------------------------------------------- */
+        else if (strcmp(uIntent, "WHERE") == 0) {             /* If intent is 'WHERE' */
+            //  If Intent and Entity pair already exists, iterate the 'WHERE' linked-list & overwrite current response data
+            if (abs(get_code) == 0) {
+                whereIterator = headofWHERE;                                  /* Point the whereIterator to head of 'WHERE' linked-list */
+                do {                                                          /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
+                    if (strcmp(whereIterator->entity, uEntity) ==
+                        0) {          /* If a node with the same Entity exists */
+                        strncpy(whereIterator->response, uResponse, MAX_RESPONSE);        /* Overwrite the existing response */
+                        printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n", uIntent, uEntity, uResponse);
+                        return KB_OK;                                         /* Return code 'KB_OK', which is of value 0 */
+                    }
+
+                    whereIterator = whereIterator->next;                      /* If program did not enter the if statement (no entity match), point the iterator to the next node */
+                } while (whereIterator);
+            }
+
+                //  If no existing record of Intent and Entity exists, create & insert the node to the head of 'WHERE' linked-list */
+            else if (abs(get_code) == 1) {
+                response_node *temp = malloc(sizeof(response_node));          /* Create node first */
+                if (temp ==
+                    NULL) {                                                   /* If not enough memory (memory failure) */
+                    return KB_NOMEM;                                          /* Return code 'KB_NOMEM' which is of value -4 */
+                }
+
+                strcpy(temp->intent, uIntent);                                /* Set node's intent attribute to uIntent */
+                strcpy(temp->entity, uEntity);                                /* Set node's entity attribute to uEntity */
+                strcpy(temp->response, uResponse);                            /* Set node's response attribute to uResponse*/
+                temp->next = headofWHERE;                                     /* Set node to be created to point to where the head of the WHERE linked-list is pointing to */
+                headofWHERE = temp;                                           /* Set 'headofWHERE' to point to where temp is */
+
+                /* Testing code */
+                printf("\nAdding Intent of headofWHERE: '%s'\nAdding Entity of headofWHERE: '%s'\nAdding Response of headofWHERE: '%s'\n", headofWHERE->intent, headofWHERE->entity, headofWHERE->response);
+                return KB_OK;                                                 /* Return code 'KB_OK' which is of value 0 */
+            }
+
+        }
+        /* ===================================================================================================================================== */
     }
-
-    /* -------------------------------------------------- Intent == 'WHAT' ----------------------------------------------------------------- */
-    else if (strcmp(uIntent,"WHAT") == 0){              /* If intent is 'WHAT' */
-        strcpy(temp->intent,uIntent);                                /* Set node's intent attribute to uIntent */
-        strcpy(temp->entity,uEntity);                                /* Set node's entity attribute to uEntity */
-        strcpy(temp->response,uResponse);                            /* Set node's response attribute to uResponse*/
-        temp->next = headofWHAT;                                     /* Set node to be created to point to where the head of the WHAT linked-list is pointing to */
-        headofWHAT = temp;                                           /* Set 'headofWHAT' to point to where temp is */
-
-        /* Testing code */
-        printf("\nAdding Intent of headofWHAT: '%s'\nAdding Entity of headofWHAT: '%s'\nAdding Response of headofWHAT: '%s'\n",headofWHAT->intent, headofWHAT->entity, headofWHAT->response);
-        return KB_OK;                                                /* Return code 'KB_OK' which is of value 0 */
-    }
-
-    /* ------------------------------------------------- Intent == 'WHERE' ----------------------------------------------------------------- */
-    else if (strcmp(uIntent,"WHERE") == 0){             /* If intent is 'WHERE' */
-        strcpy(temp->intent,uIntent);                                /* Set node's intent attribute to uIntent */
-        strcpy(temp->entity,uEntity);                                /* Set node's entity attribute to uEntity */
-        strcpy(temp->response,uResponse);                            /* Set node's response attribute to uResponse*/
-        temp->next = headofWHERE;                                    /* Set node to be created to point to where the head of the WHERE linked-list is pointing to */
-        headofWHERE = temp;                                          /* Set 'headofWHERE' to point to where temp is */
-
-        /* Testing code */
-        printf("\nAdding Intent of headofWHERE: '%s'\nAdding Entity of headofWHERE: '%s'\nAdding Response of headofWHERE: '%s'\n",headofWHERE->intent, headofWHERE->entity, headofWHERE->response);
-        return KB_OK;                                                /* Return code 'KB_OK' which is of value 0 */
-    }
-
-    /* --------------------------------------------------------- Else ---------------------------------------------------------------------- */
-    else{                                               /* If intent is INVALID */
-        return KB_INVALID;                                           /* Return code 'KB_INVALID' which is of value -2 */
-    }
-
-    /* ===================================================================================================================================== */
 }
 
 /*
@@ -336,7 +406,7 @@ int main(){
     char userentity[MAX_ENTITY];                                    /* Define a char array to store user input of size MAX_ENTITY */
     char userresponse[MAX_RESPONSE];                                /* Define a char array to store user input of size MAX_RESPONSE */
     char chatbot_response[MAX_RESPONSE];                            /* Define a char array to store chatbot's response buffer of size MAX_RESPONSE */
-    int returncode;
+    int returncode, put_return_code;
 
     /* Get userinput loop */
     for(int i=0; i<3; i++){
@@ -369,14 +439,15 @@ int main(){
 
         if (returncode==0){                                         /* If a Response (match) was found for inputted Intent and Entity */
             printf("\n----------------------------------------");
-            printf("\nResponse Exists: \n%s\n", chatbot_response);    /* Print out the contents in the response buffer */
+            printf("\nResponse Exists: \n%s\n", chatbot_response);  /* Print out the contents in the response buffer */
             printf("\n----------------------------------------");
-            memset(chatbot_response,'\0',MAX_RESPONSE);                                 /* Flush the response buffer */
+            memset(chatbot_response,'\0',MAX_RESPONSE);             /* Flush the response buffer */
         }
         else if (abs(returncode)==(1)){                             /* If failed to find a node of matching Intent and Entity */
             printf("\n----------------------------------------");
             printf("\nNo response was found for:\nIntent '%s'\nEntity '%s'\n--- Proceeding to add node ---", userintent, userentity);
-            knowledge_put(strtok(userintent,"\n"), strtok(userentity,"\n"), strtok(userresponse,"\n"));
+            put_return_code = knowledge_put(strtok(userintent,"\n"), strtok(userentity,"\n"), strtok(userresponse,"\n"));
+            printf("\nReturned Code: %d",put_return_code);          /* *******************For trouble shooting purposes, remove once done******************* */
             printf("\n----------------------------------------");
         }
         else if (abs(returncode)==(2)){                             /* If invalid Intent was given */
