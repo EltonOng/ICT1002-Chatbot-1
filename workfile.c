@@ -270,15 +270,16 @@ int knowledge_read(FILE *f) {
  *  -2, otherwise
  */
 int chatbot_is_load(const char *intent) {
-    int i = 0;
-    char uppercaseintent[MAX_INTENT];
+    // Commented out as Uppercase check done in main
+    // int i = 0;
+    // char uppercaseintent[MAX_INTENT];
 
-    while(intent[i]) {                          // Make Input Intent Uppercase
-        uppercaseintent[i] = toupper(intent[i]);
-        i++;
-    }
+    // while(intent[i]) {                          // Make Input Intent Uppercase
+    //     uppercaseintent[i] = toupper(intent[i]);
+    //     i++;
+    // }
 
-    if (strcmp(uppercaseintent, "LOAD")){       // Check if Intent is to LOAD
+    if (strcmp(intent, "LOAD")){       // Check if Intent is to LOAD
         return KB_OK;                           // Return 0 if Intent is to LOAD
     }
     else {
@@ -428,14 +429,27 @@ int main(){
         fflush(stdin);
 
         /* ---------------------------------------------------------------------------------------------- */
-        /* Call function to insert_node() */
-        returncode = knowledge_get(userintent,userentity,chatbot_response);
+        int i = 0;
+        while(userintent[i]) {                          // Make Input Intent Uppercase
+            if (97<=userintent[i]<=122){
+                userintent[i] = userintent[i]-32;
+            }
+            i++;
+        }
+        if (strcmp(userintent, "LOAD") == 0){
+            char * inv[MAX_INPUT];
+            inv[0] = userintent;
+            inv[1] = userentity;
+            returncode = chatbot_do_load(2, inv, userresponse, MAX_RESPONSE);
+        }
+        else {
+            /* Call function to insert_node() */
+            returncode = knowledge_get(userintent,userentity,chatbot_response); 
+        }
 
-        // /* Call Function to Process_File() UNCOMMENT THIS AND COMMENT ABOVE IF WANT TO SEE RESULT */
-        // char * inv[MAX_INPUT];
-        // inv[0] = "LOAD";
-        // inv[1] = "sample.ini";
-        // chatbot_do_load(2, inv, userresponse, MAX_RESPONSE);
+
+        /* Call Function to Process_File() UNCOMMENT THIS AND COMMENT ABOVE IF WANT TO SEE RESULT */
+        
 
         if (returncode==0){                                         /* If a Response (match) was found for inputted Intent and Entity */
             printf("\n----------------------------------------");

@@ -1,0 +1,6 @@
+Completed LOAD & Fixed Knowledge_Reset
+- ISLOAD Done
+- DOLOAD Done
+- KNOWLEDGE_READ Done
+- Fixed code for Memory reset
+Version 230319
