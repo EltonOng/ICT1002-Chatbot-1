@@ -373,7 +373,7 @@ int chatbot_is_smalltalk(const char *intent)
 	}
 	lowerIntent[i] = '\0'; // end of lowerIntent
 
-	if (strcmp(lowerIntent, "hi") == 0 ||strcmp(lowerIntent, "hello") == 0 || strcmp(lowerIntent, "hey") == 0 || strcmp(lowerIntent, "howdy") == 0 || strcmp(lowerIntent, "yo") == 0 || strcmp(lowerIntent, "sup" ||strcmp(lowerIntent, "hiya") == 0)
+	if (strcmp(lowerIntent, "hi") == 0 ||strcmp(lowerIntent, "hello") == 0 || strcmp(lowerIntent, "hey") == 0 || strcmp(lowerIntent, "howdy") == 0 || strcmp(lowerIntent, "yo") == 0 || strcmp(lowerIntent, "sup") == 0 ||strcmp(lowerIntent, "hiya") == 0)
 	{
 		return 1;
 	}
