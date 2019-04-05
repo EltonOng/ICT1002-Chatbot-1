@@ -276,7 +276,7 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	strncpy(userintent, inv[0], sizeof(userintent)/sizeof(userintent[0]));
 
 	char usernoun[MAX_INPUT];					/* Define a char array to store input noun */
-	strcpy(usernoun, "\0?");
+	strcpy(usernoun, "\0");
 
 	char userentity[MAX_ENTITY];				/* Define a char array to store input entity of size MAX_ENTITY */
 	snprintf(userentity, n, "");				/* Formats entity portion */
@@ -287,8 +287,23 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 
 	int put_reply_code;							/* Define an int to store flag of knowledge_put */
 
-	/* Checks for the nouns "is" or "are" */
+	if (inc == 1) {
+		if (compare_token(userintent, "what") == 0) {
+			snprintf(response, n, "Sorry, I did not understand the phrase. Did you mean something like, \"What is ICT?\"");
+		} else if (compare_token(userintent, "who") == 0) {
+			snprintf(response, n, "Sorry, I did not understand the phrase. Did you mean something like, \"Who is the cluster director of ICT?\"");
+		} else if (compare_token(userintent, "where") == 0) {
+			snprintf(response, n, "Sorry, I did not understand the phrase. Did you mean something like, \"Where is SIT?\"");
+		}
+		return 0;
+	} else if ((inc == 2 && compare_token(inv[1], "is") == 0) || (inc == 2 && compare_token(inv[1], "are") == 0)) {
+		snprintf(response, n, "Sorry, I did not understand the phrase. Please describe your noun.");
+		return 0;
+	}
+
+	/* Simple validation */
 	for (int i=1; i<inc; i++) {
+		/* Checks for the nouns "is" or "are" */
 		if ((i == 1 && compare_token(inv[i], "is") == 0) || (i == 1 && compare_token(inv[i], "are") == 0)) {
 			strncpy(usernoun, inv[i], sizeof(inv[i])/sizeof(inv[i][0]));						/* Store into usernoun */
 			continue;
@@ -301,8 +316,12 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	if (get_reply_code == KB_OK) {												/* If a response was found for the intent and entity, */
 		snprintf(response, n, "%s", chatbot_entity);							/* 	the response is copied to the response buffer. */
 
-	} else if (get_reply_code == KB_NOTFOUND) {																		/* If no response could be found, */
-		prompt_user(userresponse_notfound, MAX_INPUT, "I don't know. %s %s %s?", userintent, usernoun, userentity);	/*	asks for user input and call knowledge_put. */
+	} else if (get_reply_code == KB_NOTFOUND) {																			/* If no response could be found, */
+		if (compare_token(usernoun, "\0") == 0) {
+			prompt_user(userresponse_notfound, MAX_INPUT, "I don't know. %s %s?", userintent, userentity);				/*	asks for user input IF usernoun is not declared and call knowledge_put. */
+		} else {
+			prompt_user(userresponse_notfound, MAX_INPUT, "I don't know. %s %s %s?", userintent, usernoun, userentity);	/*	asks for user input IF usernoun is declared and call knowledge_put. */
+		}
 		put_reply_code = knowledge_put(userintent, userentity, userresponse_notfound);		/* Arguments: Intent, Entity, Buffer to store user input */
 
 		if (put_reply_code == KB_OK) {				/* If knowledge_put is successful */
@@ -403,7 +422,7 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
         /* While not end of linked-list, delete/free memory of node pointed by headofWHO currently */
         response_node *temp = headofWHO;
         do{
-            printf("\nRemoving Node '%s' '%s'",temp->intent,temp->entity);
+            printf("\nRemoving Node '%s' '%s'\n",temp->intent,temp->entity);
             temp = temp->next;
             free(headofWHO);                        /* Free memory allocation of node currently pointed to by headofWHO */
             headofWHO=temp;              /* Point headofWHO to the next node (will point to NULL if current node is last in the list) */
@@ -416,7 +435,7 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
         /* While not end of linked-list, delete/free memory of node pointed by headofWHAT currently */
         response_node *temp = headofWHAT;
         do{
-            printf("\nRemoving Node '%s' '%s'",temp->intent,temp->entity);
+            printf("\nRemoving Node '%s' '%s'\n",temp->intent,temp->entity);
             temp = temp->next;
             free(headofWHAT);                        /* Free memory allocation of node currently pointed to by headofWHAT */
             headofWHAT=temp;             /* Point headofWHAT to the next node (will point to NULL if current node is last in the list) */
@@ -429,7 +448,7 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
         /* While not end of linked-list, delete/free memory of node pointed by headofWHERE currently */
         response_node *temp = headofWHERE;
         do{
-            printf("\nRemoving Node '%s' '%s'",temp->intent,temp->entity);
+            printf("\nRemoving Node '%s' '%s'\n",temp->intent,temp->entity);
             temp = temp->next;
             free(headofWHERE);                       /* Free memory allocation of node currently pointed to by headofWHERE */
             headofWHERE=temp;           /* Point headofWHERE to the next node (will point to NULL if current node is last in the list) */
