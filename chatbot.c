@@ -495,28 +495,22 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
  *  1, if the intent is the first word of one of the smalltalk phrases
  *  0, otherwise
  */
-int chatbot_is_smalltalk(const char *intent)
-{
-
-	char lowerIntent[MAX_INTENT];
-	int i;
-	for (i = 0; i < strlen(intent); i++)
+int chatbot_is_smalltalk(const char *intent) {
+	
+	char *smalltalk[] = {"Hi", "Sup", "Hey", "Howdy", "Yo", "Hiya", "Greetings","Hello"};
+	size_t smalltalkLength = sizeof(smalltalk) / sizeof(smalltalk[0]);
+	for(int i = 0; i< smalltalkLength; i++)
 	{
-		lowerIntent[i] = tolower(intent[i]);
-	}
-	lowerIntent[i] = '\0'; // end of lowerIntent
-
-	if (strcmp(lowerIntent, "load") == 0 ||strcmp(lowerIntent, "save") == 0 || strcmp(lowerIntent, "what") == 0 || strcmp(lowerIntent, "where") == 0 || strcmp(lowerIntent, "who") == 0)
-	{
-		return 0;
-	}
-	else
-	{
-		return 1;
+		if(compare_token(intent,smalltalk[i]) == 0)
+		{
+			return 1;
+		}
 	}
 	
-
+	return 0;
+ 
 }
+
 
 /*
  * Respond to smalltalk.
@@ -528,46 +522,15 @@ int chatbot_is_smalltalk(const char *intent)
  *   0, if the chatbot should continue chatting
  *   1, if the chatbot should stop chatting (e.g. the smalltalk was "goodbye" etc.)
  */
-int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n)
-{
-
-	char intent[MAX_INTENT];
-	intent == inv[0];
-	int i;
-	for (i = 0; i < strlen(intent); i++)
-	{
-		intent[i] = tolower(intent[i]);
-	}
-	intent[i] = '\0'; // end of intent
-
-	if (strcmp(intent, "hi") == 0)
-	{
-		snprintf(response, n, "Hi, Welcome to 1002 Chatbox programmed by Jordan, Xiu Qi, Jun Ming, Dominic and Guang Jun.");
-	}
-	else if (strcmp(intent, "hello") == 0)
-	{
-		snprintf(response, n, "Hello, Welcome to 1002 Chatbox programmed by Jordan, Xiu Qi, Jun Ming, Dominic and Guang Jun.");
-	}
-	else if (strcmp(intent, "hey") == 0)
-	{
-		snprintf(response, n, "Hey!");
-	}
-	else if (strcmp(intent, "howdy") == 0)
-	{
-		snprintf(response, n, "Howdy!");
-	}
-	else if (strcmp(intent, "yo") == 0)
-	{
-		snprintf(response, n, "Yo!");
-	}
-	else if (strcmp(intent, "sup") == 0)
-	{
-		snprintf(response, n, "Sup!");
-	}
-	else if (strcmp(intent, "hiya") == 0)
-	{
-		snprintf(response, n, "Hiya!");
-	}
-
+int chatbot_do_smalltalk(int inc, char *inv[], char *response, int n) {
+	
+	char *smalltalkOutput[] = {"Hi, Welcome to ICT1002 Chatbot programmed by Jordan, Xiu Qi, Jun Ming, Dominic and Guang Jun", "What's up?",  "Hi!", "Sup!", "Hey!", "Howdy!", "Yo!", "Hiya!", "Greetings!"};
+	size_t smalltalkLength = sizeof(smalltalkOutput) / sizeof(smalltalkOutput[0]);
+	int randomOutput = rand() % smalltalkLength;
+	snprintf(response, n, smalltalkOutput[randomOutput]);
+		
+    
+	
 	return 0;
+	
 }
