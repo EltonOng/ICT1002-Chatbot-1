@@ -153,15 +153,15 @@ int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
  *
  * Returns:
  *  0, if the intent is "load"
- *  -2, otherwise
+ *  1, otherwise
  */
 int chatbot_is_load(const char *intent) {
 
 	if (compare_token(intent, "load")){	// Check if Intent is to LOAD
-		return KB_OK;							// Return 0 if Intent is to LOAD
+		return 0;					// Return 1 if Intent is to LOAD
 	}
 	else {
-		return KB_INVALID;						// Return -2 if intent not to LOAD
+		return 1;						// Return 0 if intent not to LOAD
 	}
 }
 
@@ -224,7 +224,7 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
             strcpy(response,"File not found!");					// Error response for File Not Found
         }
     }
-    return KB_OK;
+    return 0;
 	 
 }
 
