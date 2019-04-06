@@ -54,7 +54,7 @@
  */
 const char *chatbot_botname() {
 
-	return "Karin";
+	return "Javis";
 	
 }
 
