@@ -144,7 +144,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
                 do{                                                          /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
                     if (compare_token(whoIterator->entity,entity)==0){              /* If a node with the same Entity exists */
                         strncpy(whoIterator->response, response, MAX_RESPONSE);        /* Overwrite the existing response */
-                        printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n",intent, entity, response);
+                        //printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n",intent, entity, response);
                         return KB_OK;                                        /* Return code 'KB_OK', which is of value 0 */
                     }
 
@@ -166,7 +166,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
                 headofWHO = temp;                                            /* Set 'headofWHO' to point to where temp is */
 
                 /* Testing code */
-                printf("\nAdding Intent of headofWHO: '%s'\nAdding Entity of headofWHO: '%s'\nAdding Response of headofWHO: '%s'\n",headofWHO->intent, headofWHO->entity, headofWHO->response);
+                //printf("\nAdding Intent of headofWHO: '%s'\nAdding Entity of headofWHO: '%s'\nAdding Response of headofWHO: '%s'\n",headofWHO->intent, headofWHO->entity, headofWHO->response);
                 return KB_OK;                                                /* Return code 'KB_OK' which is of value 0 */
             }
         }
@@ -179,7 +179,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
                 do {                                                          /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
                     if (compare_token(whatIterator->entity, entity) == 0) {          /* If a node with the same Entity exists */
                         strncpy(whatIterator->response, response, MAX_RESPONSE);        /* Overwrite the existing response */
-                        printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n", intent, entity, response);
+                        //printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n", intent, entity, response);
                         return KB_OK;                                         /* Return code 'KB_OK', which is of value 0 */
                     }
 
@@ -215,7 +215,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
                     if (compare_token(whereIterator->entity, entity) ==
                         0) {          /* If a node with the same Entity exists */
                         strncpy(whereIterator->response, response, MAX_RESPONSE);        /* Overwrite the existing response */
-                        printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n", intent, entity, response);
+                        //printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n", intent, entity, response);
                         return KB_OK;                                         /* Return code 'KB_OK', which is of value 0 */
                     }
 
@@ -238,7 +238,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
                 headofWHERE = temp;                                           /* Set 'headofWHERE' to point to where temp is */
 
                 /* Testing code */
-                printf("\nAdding Intent of headofWHERE: '%s'\nAdding Entity of headofWHERE: '%s'\nAdding Response of headofWHERE: '%s'\n", headofWHERE->intent, headofWHERE->entity, headofWHERE->response);
+                //printf("\nAdding Intent of headofWHERE: '%s'\nAdding Entity of headofWHERE: '%s'\nAdding Response of headofWHERE: '%s'\n", headofWHERE->intent, headofWHERE->entity, headofWHERE->response);
                 return KB_OK;                                                 /* Return code 'KB_OK' which is of value 0 */
             }
 
@@ -309,9 +309,42 @@ int knowledge_read(FILE * f) {
  * Reset the knowledge base, removing all know entitities from all intents.
  */
 void knowledge_reset() {
-	
-	/* to be implemented */
-	
+
+    /* -------------------------------------------------- Empty 'WHO' linked-list ----------------------------------------------------------------- */
+    if (headofWHO!=NULL){                                   /* If headOfWHO is not NULL (linked-list is not empty) */
+	    whoIterator = headofWHO;                            /* Point the whoIterator to headOfWHO's pointed location */
+
+	    while (headofWHO!=NULL){                            /* While headOfWHO is not NULL */
+	        headofWHO=headofWHO->next;                      /* Point headOfWHO to the next node first */
+	        //printf("\nRemoving Node: %s %s", whoIterator->intent, whoIterator->entity);
+	        free(whoIterator);                              /* Free the current node pointed by whoIterator */
+	        whoIterator=headofWHO;                          /* Update whoIterator to point to the next node */
+	    }
+	}
+
+    /* -------------------------------------------------- Empty 'WHAT' linked-list ---------------------------------------------------------------- */
+    if (headofWHAT!=NULL){                                  /* If headOfWHAT is not NULL (linked-list is not empty) */
+        whatIterator = headofWHAT;                          /* Point the whatIterator to headOfWHAT's pointed location */
+
+        while (headofWHAT!=NULL){                           /* While headOfWHAT is not NULL */
+            headofWHAT=headofWHAT->next;                    /* Point headOfWHAT to the next node first */
+            //printf("\nRemoving Node: %s %s", whatIterator->intent, whatIterator->entity);
+            free(whatIterator);                             /* Free the current node pointed by whatIterator */
+            whatIterator=headofWHAT;                        /* Update whatIterator to point to the next node */
+        }
+    }
+
+    /* -------------------------------------------------- Empty 'WHERE' linked-list --------------------------------------------------------------- */
+    if (headofWHERE!=NULL){                                 /* If headOfWHERE is not NULL (linked-list is not empty) */
+        whereIterator = headofWHERE;                        /* Point the whereIterator to headOfWHERE's pointed location */
+
+        while (headofWHERE!=NULL){                          /* While headOfWHERE is not NULL */
+            headofWHERE=headofWHERE->next;                  /* Point headOfWHERE to the next node first */
+            //printf("\nRemoving Node: %s %s", whereIterator->intent, whereIterator->entity);
+            free(whereIterator);                            /* Free the current node pointed by whereIterator */
+            whereIterator=headofWHERE;                      /* Update whereIterator to point to the next node */
+        }
+    }
 }
 
 

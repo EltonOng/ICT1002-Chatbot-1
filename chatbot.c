@@ -121,7 +121,6 @@ int chatbot_main(int inc, char *inv[], char *response, int n) {
  *  0, otherwise
  */
 int chatbot_is_exit(const char *intent) {
-	
 	return compare_token(intent, "exit") == 0 || compare_token(intent, "quit") == 0 || compare_token(intent, "goodbye") == 0;
 	
 }
@@ -137,7 +136,7 @@ int chatbot_is_exit(const char *intent) {
  *   0 (the chatbot always continues chatting after a question)
  */
 int chatbot_do_exit(int inc, char *inv[], char *response, int n) {
-	 
+	knowledge_reset();
 	snprintf(response, n, "Goodbye!");
 	 
 	return 1;
@@ -348,7 +347,9 @@ int chatbot_is_reset(const char *intent) {
  *   0 (the chatbot always continues chatting after beign reset)
  */
 int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
-	
+	knowledge_reset();
+	snprintf(response, n, "Chatbot reset.");
+	return 0;
 	int reset_count = 0;
 
 	/* ------------------------------- If 'WHO' linked-list is not empty (headofWHO not pointing to NULL) ---------------------------------- */
@@ -481,7 +482,7 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_smalltalk(const char *intent) {
 	
-	char *smalltalk[] = {"Hi", "Sup", "Hey", "Howdy", "Yo", "Hiya", "Greetings","Hello"};
+	char *smalltalk[] = {"Hi", "Sup", "Hey", "Howdy", "Yo", "Hiya", "Greetings", "Hello"};
 	size_t smalltalkLength = sizeof(smalltalk) / sizeof(smalltalk[0]);
 	for(int i = 0; i< smalltalkLength; i++)
 	{
