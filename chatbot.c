@@ -466,19 +466,18 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
  *  intent - the intent
  *
  * Returns:
- *  1, if the intent is "what", "where", or "who"
- *  0, otherwise
+ *  0, if the intent is "what", "where", or "who"
+ *  1, otherwise
  */
 int chatbot_is_save(const char *intent) {
 	
 	if (compare_token(intent,"save")){       // Check if Intent is to SAVE
-        return KB_OK;                           // Return 0 if Intent is to SAVE
+        return 0;                           // Return 0 if Intent is to SAVE
     }
     else {
-        return KB_INVALID;                      // Return -2 if intent not to SAVE
+        return 1;                      // Return -2 if intent not to SAVE
     }
 	
-	return 0;
 	
 }
 
