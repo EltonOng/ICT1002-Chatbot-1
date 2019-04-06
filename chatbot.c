@@ -206,6 +206,7 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
                     splitoutput = strtok(buffer, "=");			// Obtain the Entity from line of file
                     strcpy(entity, splitoutput);
                     splitoutput = strtok (NULL, "=");			// Obtain the Response from line of file
+                    splitoutput[strcspn(splitoutput, "\n")] = 0;
                     strcpy(fileresponse, splitoutput);
                     insertsuccess = knowledge_put(intent, entity, fileresponse);	// Send to Knowledge_Put to insert into List
                 }
@@ -315,15 +316,21 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 		} else {
 			prompt_user(userresponse_notfound, MAX_INPUT, "I don't know. %s %s %s?", userintent, usernoun, userentity);	/*	asks for user input IF usernoun is declared and call knowledge_put. */
 		}
-		put_reply_code = knowledge_put(userintent, userentity, userresponse_notfound);		/* Arguments: Intent, Entity, Buffer to store user input */
 
-		if (put_reply_code == KB_OK) {				/* If knowledge_put is successful */
-			snprintf(response, n, "Thank you.");
-		} else if (put_reply_code == KB_NOMEM) {	/* Else if there is insufficient memory */
-			snprintf(response, n, "Memory allocation failure! Failed to create note for:\nIntent '%s'\nEntity '%s'\nResponse '%s'\n",userintent, userentity, userresponse_notfound);
-			exit(1);
-		} else if (put_reply_code == KB_INVALID) {	/* Else if the intent is not valid */
-			snprintf(response, n, "Sorry, I didn't get %s.", userintent);
+		if (strcmp(userresponse_notfound, "") == 0){
+			strcpy(response, "-(");
+		}
+		else{
+			put_reply_code = knowledge_put(userintent, userentity, userresponse_notfound);		/* Arguments: Intent, Entity, Buffer to store user input */
+
+			if (put_reply_code == KB_OK) {				/* If knowledge_put is successful */
+				snprintf(response, n, "Thank you.");
+			} else if (put_reply_code == KB_NOMEM) {	/* Else if there is insufficient memory */
+				snprintf(response, n, "Memory allocation failure! Failed to create note for:\nIntent '%s'\nEntity '%s'\nResponse '%s'\n",userintent, userentity, userresponse_notfound);
+				exit(1);
+			} else if (put_reply_code == KB_INVALID) {	/* Else if the intent is not valid */
+				snprintf(response, n, "Sorry, I didn't get %s.", userintent);
+			}
 		}
 
 	} else if (get_reply_code == KB_INVALID) {

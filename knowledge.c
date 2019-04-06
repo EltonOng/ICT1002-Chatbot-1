@@ -299,7 +299,7 @@ void knowledge_write(FILE *f) {
             fprintf(f,"[%s]\n", "what");
             while (temp != NULL){
                 fprintf(f,"%s=", temp->entity);
-                fprintf(f,"%s", temp->response);
+                fprintf(f,"%s\n", temp->response);
                 temp = temp->next;
             }
         }
@@ -311,7 +311,7 @@ void knowledge_write(FILE *f) {
             fprintf(f,"[%s]\n", "who");
             while (temp != NULL){
                 fprintf(f,"%s=", temp->entity);
-                fprintf(f,"%s", temp->response);
+                fprintf(f,"%s\n", temp->response);
                 temp = temp->next;
             }
         }
@@ -323,7 +323,7 @@ void knowledge_write(FILE *f) {
             fprintf(f,"[%s]\n", "where");
             while (temp != NULL){
                 fprintf(f,"%s=", temp->entity);
-                fprintf(f,"%s", temp->response);
+                fprintf(f,"%s\n", temp->response);
                 temp = temp->next;
             }
         }
