@@ -54,7 +54,7 @@
  */
 const char *chatbot_botname() {
 
-	return "Chatbot";
+	return "Karin";
 	
 }
 
@@ -122,7 +122,7 @@ int chatbot_main(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_exit(const char *intent) {
 	
-	return compare_token(intent, "exit") == 0 || compare_token(intent, "quit") == 0;
+	return compare_token(intent, "exit") == 0 || compare_token(intent, "quit") == 0 || compare_token(intent, "goodbye") == 0;
 	
 }
 
