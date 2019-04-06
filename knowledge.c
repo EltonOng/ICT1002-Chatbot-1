@@ -257,21 +257,50 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
  *
  * Returns: the number of entity/response pairs successful read from the file
  */
-int knowledge_read(FILE *f) {
+int knowledge_read(FILE * f) {
     int linesCount = 0;
+    char *splitoutput;
+    size_t buffer_size = MAX_INTENT;                              
+    char *buffer = malloc(buffer_size * sizeof(char));      // Allocate a Dynamic Buffer for File Line
+    char intent[MAX_INPUT], entity[MAX_ENTITY], fileresponse[MAX_RESPONSE];
     const char ch = '=';
 
-    size_t buffer_size = MAX_INPUT;                              
-    char *buffer = malloc(buffer_size * sizeof(char));      // Allocate a Dynamic Buffer for File Line
     while(getline(&buffer, &buffer_size, f) != KB_NOTFOUND)
-    {      
-        if (strchr(buffer,ch)){                             // Valid Entires have '=', checks how many Valid entries
+    {   
+        if (strstr(buffer, "what")){
+            strcpy(intent, "WHAT");                     // Set Intent to WHAT until Next Intent Found
+        }
+        else if (strstr(buffer, "where")){
+            strcpy(intent, "WHERE");                    // Set Intent to WHERE until Next Intent Found
+        }
+        else if (strstr(buffer, "who")){
+            strcpy(intent, "WHO");                      // Set Intent to WHO until Next Intent Found
+        }
+        if (strchr(buffer,ch)){
+            splitoutput = strtok(buffer, "=");          // Obtain the Entity from line of file
+            strcpy(entity, splitoutput);
+            splitoutput = strtok (NULL, "=");           // Obtain the Response from line of file
+            splitoutput[strcspn(splitoutput, "\n")] = 0;
+            strcpy(fileresponse, splitoutput);
+            knowledge_put(intent, entity, fileresponse);    // Send to Knowledge_Put to insert into List
             linesCount++;
         }
     }
-    fflush(stdout);
-    free(buffer);                                           // Free Buffer Dyanmic Memory
-    fseek(f, 0, SEEK_SET);                                  // Reset File Pointer to Start
+    
+    fflush(stdout);                                     // Flush any unecessary remaining input
+    free(buffer);                                       // Free buffer dynamic memory
+
+
+
+    // while(getline(&buffer, &buffer_size, f) != KB_NOTFOUND)
+    // {      
+    //     if (strchr(buffer,ch)){                             // Valid Entires have '=', checks how many Valid entries
+    //         linesCount++;
+    //     }
+    // }
+    // fflush(stdout);
+    // free(buffer);                                           // Free Buffer Dyanmic Memory
+    // fseek(f, 0, SEEK_SET);                                  // Reset File Pointer to Start
     return linesCount;                                      // Return the number of valid entries
 }
 

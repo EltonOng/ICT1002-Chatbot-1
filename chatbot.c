@@ -176,50 +176,18 @@ int chatbot_is_load(const char *intent) {
  *   0  (the chatbot always continues chatting after loading knowledge, even if file not found
  */
 int chatbot_do_load(int inc, char *inv[], char *response, int n) {
+	int linecount = 0;
+
     if (inv[1] == NULL){
         strcpy(response,"No file inputted!");					// Error Response for No Input for File
     }
     else {
         FILE *file;
-        char *splitoutput;
-        int noofentries, insertsuccess;
-        size_t buffer_size = MAX_INTENT;                              
-        char *buffer = malloc(buffer_size * sizeof(char));      // Allocate a Dynamic Buffer for File Line
-        char intent[MAX_INPUT], entity[MAX_ENTITY], fileresponse[MAX_RESPONSE];
-        const char ch = '=';
-
+        
         if (file = fopen(inv[1], "r")){							// Open File for Reading
-            strcpy(response,"");								// Reset Response as no ERROR
-            noofentries = knowledge_read(file);					// Send to knowledge_read to get Number of lines to parse.
-            while(getline(&buffer, &buffer_size, file) != KB_NOTFOUND)
-            {   
-                if (strstr(buffer, "what")){
-                    strcpy(intent, "WHAT");						// Set Intent to WHAT until Next Intent Found
-                }
-                else if (strstr(buffer, "where")){
-                    strcpy(intent, "WHERE");					// Set Intent to WHERE until Next Intent Found
-                }
-                else if (strstr(buffer, "who")){
-                    strcpy(intent, "WHO");						// Set Intent to WHO until Next Intent Found
-                }
-                if (strchr(buffer,ch)){
-                    splitoutput = strtok(buffer, "=");			// Obtain the Entity from line of file
-                    strcpy(entity, splitoutput);
-                    splitoutput = strtok (NULL, "=");			// Obtain the Response from line of file
-                    splitoutput[strcspn(splitoutput, "\n")] = 0;
-                    strcpy(fileresponse, splitoutput);
-                    insertsuccess = knowledge_put(intent, entity, fileresponse);	// Send to Knowledge_Put to insert into List
-                }
-            }
-            if (insertsuccess == 0){
-            	snprintf(response, n, "%d entries inserted into lists.", noofentries); // Add Response to Chatbot
-            }
-            else {
-            	strcpy(response, "Error in inserting into nodes.");	// If Knowledge_Put doesn't insert successfully
-            }
-            fflush(stdout);										// Flush any unecessary remaining input
-            free(buffer);										// Free buffer dynamic memory
+        	linecount = knowledge_read(file);					// Get number of entries inserted
             fclose(file);										// Close file pointer
+           	snprintf(response, n,"Read %d responses from %s\n", linecount, inv[1]);
         }
         else{
             strcpy(response,"File not found!");					// Error response for File Not Found
