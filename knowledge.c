@@ -258,7 +258,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
  * Returns: the number of entity/response pairs successful read from the file
  */
 int knowledge_read(FILE *f) {
-    int linesCount;
+    int linesCount = 0;
     const char ch = '=';
 
     size_t buffer_size = MAX_INPUT;                              
