@@ -430,12 +430,14 @@ int main(){
 
         /* ---------------------------------------------------------------------------------------------- */
         int i = 0;
-        while(userintent[i]) {                          // Make Input Intent Uppercase
-            if (97<=userintent[i]<=122){
+
+        while(i < strlen(userintent)) {                          // Make Input Intent Uppercase
+            if (userintent[i]>=97 &&  userintent[i] <= 122){
                 userintent[i] = userintent[i]-32;
             }
             i++;
         }
+        printf("%s\n",userintent);
         if (strcmp(userintent, "LOAD") == 0){
             char * inv[MAX_INPUT];
             inv[0] = userintent;
