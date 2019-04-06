@@ -8,7 +8,12 @@
 #ifndef _CHAT1002_H
 #define _CHAT1002_H
 
+/* Include the libraries */
 #include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <setjmp.h>
 
 /* the maximum number of characters we expect in a line of input (including the terminating null)  */
 #define MAX_INPUT    256
@@ -27,7 +32,22 @@
 #define KB_NOTFOUND -1
 #define KB_INVALID  -2
 #define KB_NOMEM    -3
- 
+
+
+/* Defining the structure of the linked-list nodes */
+typedef struct response_node{
+    char intent[MAX_INTENT];   // Defining attribute 'intent', with max char size of 32 (including the terminating null)
+    char entity[MAX_ENTITY];   // Defining attribute 'entity', with max char size of 64 (including the terminating null)
+    char response[MAX_RESPONSE]; // Defining attribute 'response', with max char size of 256 (including the terminating null)
+    struct response_node *next;
+}response_node;
+
+/* Define the three pointers that will point to the head of each of the 3 linked-lists */
+response_node *headofWHO, *headofWHAT, *headofWHERE;
+
+/* Define the three pointers that will be used to traverse the 3 respective linked-lists */
+response_node *whoIterator, *whatIterator, *whereIterator;
+
 /* functions defined in main.c */
 int compare_token(const char *token1, const char *token2);
 void prompt_user(char *buf, int n, const char *format, ...);
