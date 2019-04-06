@@ -126,7 +126,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
     /* ===================================================================================================================================== */
     char temp_responseBUFFER[MAX_RESPONSE];                                  /* Create a temp buffer for response (needed to call knowledge_get()) */
 
-    int get_code = knowledge_get(intent,entity,temp_responseBUFFER);         /* Call knowledge_get() to check if the Intent and Entity pair already exists */
+    int get_code = knowledge_get(intent,entity,temp_responseBUFFER, MAX_RESPONSE);   /* Call knowledge_get() to check if the Intent and Entity pair already exists */
     memset(temp_responseBUFFER,'\0',MAX_RESPONSE);                           /* Clear the temp_response buffer */
 
     /* Return KB_INVALID if intent is invalid */
