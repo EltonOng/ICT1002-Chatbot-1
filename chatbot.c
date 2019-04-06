@@ -471,7 +471,12 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
  */
 int chatbot_is_save(const char *intent) {
 	
-	/* to be implemented */
+	if (strcmp(intent, "save")){       // Check if Intent is to SAVE
+        return KB_OK;                           // Return 0 if Intent is to SAVE
+    }
+    else {
+        return KB_INVALID;                      // Return -2 if intent not to SAVE
+    }
 	
 	return 0;
 	
@@ -489,7 +494,63 @@ int chatbot_is_save(const char *intent) {
  */
 int chatbot_do_save(int inc, char *inv[], char *response, int n) {
 	
-	/* to be implemented */
+	char filename[64];
+
+    if (inv[1] == NULL){
+        strcpy(response,"No file inputted!");                   // Error Response for No Input for File
+    }else{
+
+    	strcpy(filename, inv[1]);
+
+    	int num;
+   		FILE *fptr;
+   		fptr = fopen(filename, "w");
+    	if(fptr == NULL){
+			printf("Error!");   
+			exit(1);             
+		}
+
+    	if (headofWHAT!=NULL){    
+			response_node *temp = headofWHAT;
+			fprintf(fptr,"[%s]\n", "what");
+			while (temp != NULL){
+				//printf("Intentt:'%s'\n", temp-> intent);
+				//printf("Entityy:'%s'\n", temp-> entity);
+				//printf("Responsee:'%s'\n", temp-> response);
+				fprintf(fptr,"%s=", temp->entity);
+				fprintf(fptr,"%s", temp->response);
+				temp = temp->next;
+			}
+		}
+
+		fprintf(fptr,"%s", "\n");
+
+    	if (headofWHO!=NULL){    
+			response_node *temp = headofWHO;
+			fprintf(fptr,"[%s]\n", "who");
+			while (temp != NULL){
+				fprintf(fptr,"%s=", temp->entity);
+				fprintf(fptr,"%s", temp->response);
+				temp = temp->next;
+			}
+		}
+
+		fprintf(fptr,"%s", "\n");
+
+		if (headofWHERE!=NULL){    
+			response_node *temp = headofWHERE;
+			fprintf(fptr,"[%s]\n", "where");
+			while (temp != NULL){
+				fprintf(fptr,"%s=", temp->entity);
+				fprintf(fptr,"%s", temp->response);
+				temp = temp->next;
+			}
+		}
+
+		fclose(fptr);
+
+
+    }
 	
 	return 0;
 	 
