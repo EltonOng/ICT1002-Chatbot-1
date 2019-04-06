@@ -35,7 +35,7 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
 
     /* ==================================================================================================================================== */
     /* ----------------------------------------------------- If intent=="WHO" ----------------------------------------------------- */
-    if (strcmp(intent,"WHO")==0){
+    if (compare_token(intent, "who")==0){
         if (headofWHO!=NULL){                                       /* If a linked-list already exists */
             whoIterator = headofWHO;                                /* Point the whoIterator to head of 'WHO' linked-list */
             do{                                                     /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
@@ -56,7 +56,7 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
         }
     }
         /* ----------------------------------------------------- ELSE If intent=="WHAT" -----------------------------------------------------*/
-    else if (strcmp(intent,"WHAT")==0){
+    else if (compare_token(intent, "what")==0){
         if (headofWHAT!=NULL){                                      /* If a linked-list already exists */
             whatIterator = headofWHAT;                              /* Point the whatIterator to head of 'WHAT' linked-list */
             do{                                                     /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
@@ -77,7 +77,7 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
         }
     }
         /* ----------------------------------------------------- ELSE If intent=="WHERE" ----------------------------------------------------- */
-    else if (strcmp(intent,"WHERE")==0){
+    else if (compare_token(intent, "where")==0){
         if (headofWHERE!=NULL){                                     /* If a linked-list already exists */
             whereIterator = headofWHERE;                            /* Point the whereIterator to head of 'WHERE' linked-list */
             do{                                                     /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
@@ -137,7 +137,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
         /* Else, either overwrite or insert the node depending on the return code, and the Intent */
     else{
         /* -------------------------------------------------- Intent == 'WHO' ----------------------------------------------------------------- */
-        if (strcmp(intent,"WHO") == 0){                    /* If intent is 'WHO' */
+        if (compare_token(intent, "who") == 0){                    /* If intent is 'WHO' */
             //  If Intent and Entity pair already exists, iterate the 'WHO' linked-list & overwrite current response data
             if (abs(get_code)==0){
                 whoIterator = headofWHO;                                     /* Point the whoIterator to head of 'WHO' linked-list */
@@ -172,7 +172,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
         }
 
             /* -------------------------------------------------- Intent == 'WHAT' ----------------------------------------------------------------- */
-        else if (strcmp(intent,"WHAT") == 0) {              /* If intent is 'WHAT' */
+        else if (compare_token(intent, "what") == 0) {              /* If intent is 'WHAT' */
             //  If Intent and Entity pair already exists, iterate the 'WHAT' linked-list & overwrite current response data
             if (abs(get_code) == 0) {
                 whatIterator = headofWHAT;                                    /* Point the whatIterator to head of 'WHAT' linked-list */
@@ -207,7 +207,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
         }
 
             /* ------------------------------------------------- Intent == 'WHERE' ----------------------------------------------------------------- */
-        else if (strcmp(intent, "WHERE") == 0) {             /* If intent is 'WHERE' */
+        else if (compare_token(intent, "where") == 0) {             /* If intent is 'WHERE' */
             //  If Intent and Entity pair already exists, iterate the 'WHERE' linked-list & overwrite current response data
             if (abs(get_code) == 0) {
                 whereIterator = headofWHERE;                                  /* Point the whereIterator to head of 'WHERE' linked-list */
