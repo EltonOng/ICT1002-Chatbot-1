@@ -212,10 +212,10 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
                 }
             }
             if (insertsuccess == 0){
-            	snprintf(response, n, "%d entires inserted into lists", noofentries); // Add Response to Chatbot
+            	snprintf(response, n, "%d entries inserted into lists.", noofentries); // Add Response to Chatbot
             }
             else {
-            	strcpy(response, "Error in inserting into nodes");	// If Knowledge_Put doesn't insert successfully
+            	strcpy(response, "Error in inserting into nodes.");	// If Knowledge_Put doesn't insert successfully
             }
             fflush(stdout);										// Flush any unecessary remaining input
             free(buffer);										// Free buffer dynamic memory
@@ -281,6 +281,8 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 
 	int put_reply_code;							/* Define an int to store flag of knowledge_put */
 
+
+	/* Validation: Checks if Intent is accompanied by entity */
 	if (inc == 1) {
 		if (compare_token(userintent, "what") == 0) {
 			snprintf(response, n, "Sorry, I did not understand the phrase. Did you mean something like, \"What is ICT?\"");
@@ -295,7 +297,8 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 		return 0;
 	}
 
-	/* Simple validation */
+
+	/* Simple Validation */
 	for (int i=1; i<inc; i++) {
 		/* Checks for the nouns "is" or "are" */
 		if ((i == 1 && compare_token(inv[i], "is") == 0) || (i == 1 && compare_token(inv[i], "are") == 0)) {
@@ -306,21 +309,24 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 	}
 	memmove(userentity, userentity+1, strlen(userentity));	/* Formats entity portion */
 
+
+	/* Calls knowledge_get and perform checks for various return values */
 	get_reply_code = knowledge_get(userintent, userentity, chatbot_entity, n);	/* Arguments: Intent, Entity, Buffer to store response from knowledge */
 	if (get_reply_code == KB_OK) {												/* If a response was found for the intent and entity, */
 		snprintf(response, n, "%s", chatbot_entity);							/* 	the response is copied to the response buffer. */
 
 	} else if (get_reply_code == KB_NOTFOUND) {																			/* If no response could be found, */
 		if (compare_token(usernoun, "\0") == 0) {
-			prompt_user(userresponse_notfound, MAX_INPUT, "I don't know. %s %s?", userintent, userentity);				/*	asks for user input IF usernoun is not declared and call knowledge_put. */
+			prompt_user(userresponse_notfound, MAX_INPUT, "I don't know. %s %s?", userintent, userentity);				/*	asks for user input IF usernoun is not declared, then call knowledge_put. */
 		} else {
-			prompt_user(userresponse_notfound, MAX_INPUT, "I don't know. %s %s %s?", userintent, usernoun, userentity);	/*	asks for user input IF usernoun is declared and call knowledge_put. */
+			prompt_user(userresponse_notfound, MAX_INPUT, "I don't know. %s %s %s?", userintent, usernoun, userentity);	/*	asks for user input IF usernoun is declared, then call knowledge_put. */
 		}
 
 		if (strcmp(userresponse_notfound, "") == 0){
 			strcpy(response, "-(");
-		}
-		else{
+		} else {
+
+			/* Calls knowledge_put to insert user response into knowledge base */
 			put_reply_code = knowledge_put(userintent, userentity, userresponse_notfound);		/* Arguments: Intent, Entity, Buffer to store user input */
 
 			if (put_reply_code == KB_OK) {				/* If knowledge_put is successful */
@@ -329,55 +335,15 @@ int chatbot_do_question(int inc, char *inv[], char *response, int n) {
 				snprintf(response, n, "Memory allocation failure! Failed to create note for:\nIntent '%s'\nEntity '%s'\nResponse '%s'\n",userintent, userentity, userresponse_notfound);
 				exit(1);
 			} else if (put_reply_code == KB_INVALID) {	/* Else if the intent is not valid */
-				snprintf(response, n, "Sorry, I didn't get %s.", userintent);
+				snprintf(response, n, "Sorry, I didn't get '%s'.", userintent);
 			}
 		}
 
 	} else if (get_reply_code == KB_INVALID) {
-		snprintf(response, n, "Sorry, I didn't get %s.", userintent);
+		snprintf(response, n, "Sorry, I didn't get '%s'.", userintent);
 	}
 
-	/*
-		1a. Given: "what is the ICT Cluster"
-
-		1b. call knowledge_get(inv[0], inv[2 to end], response, n)
-			returns:
-			i.   KB_OK		: response was found
-			ii.  KB_NOTFOUND: response not found
-			iii. KB_INVALID : inv[0] is not a recognised word 	(should be checked before passing)
-
-		2a. if KB_OK, 
-				printf(inv[2 to end] + response)
-					e.g. The ICT Cluster + teaches information and communications technology.
-				return 0;
-		
-		2b. elif KB_NOTFOUND,
-				printf("I don't know. inv[0] + inv[1] + inv[2 to end]")
-				fgets(response)
-
-				call knowledge_put(inv[0], inv[2 to end], response)
-				returns:
-				i. 	 KB_FOUND 	: response inserted successfully
-				ii.  KB_NOMEM	: memory alloc failure
-				iii. KB_INVALID : inv[0] is not a recognised word 	(should be checked before passing)
-
-		2b i.	if KB_FOUND,
-					printf("Thank you.");
-					return 0;
-
-		2b ii.	elif KB_NOMEM,
-					printf("Insufficient Memory. Exiting ...");
-					exit();
-		
-		2b iii. elif KB_INVALID,
-					printf("inv[0] is not a recognised question word");
-					return 0;
-
-		2c. elif KB_INVALID,
-				printf("inv[0] is not a recognised question word");
-				return 0;
-	*/
-	 
+	
 	return 0;
 	 
 }
@@ -418,48 +384,48 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
 	int reset_count = 0;
 
 	/* ------------------------------- If 'WHO' linked-list is not empty (headofWHO not pointing to NULL) ---------------------------------- */
-    if (headofWHO!=NULL){
+    if (headofWHO!=NULL) {
         /* While not end of linked-list, delete/free memory of node pointed by headofWHO currently */
         response_node *temp = headofWHO;
-        do{
+        do {
             printf("\nRemoving Node '%s' '%s\n'",temp->intent,temp->entity);
             temp = temp->next;
             free(headofWHO);                        /* Free memory allocation of node currently pointed to by headofWHO */
             headofWHO=temp;              /* Point headofWHO to the next node (will point to NULL if current node is last in the list) */
-        }while(temp != NULL);
+        } while (temp != NULL);
         reset_count++;
     }
 
     /* ------------------------------ If 'WHAT' linked-list is not empty (headofWHAT not pointing to NULL) --------------------------------- */
-    if (headofWHAT!=NULL){
+    if (headofWHAT!=NULL) {
         /* While not end of linked-list, delete/free memory of node pointed by headofWHAT currently */
         response_node *temp = headofWHAT;
-        do{
+        do {
             printf("\nRemoving Node '%s' '%s\n'",temp->intent,temp->entity);
             temp = temp->next;
             free(headofWHAT);                        /* Free memory allocation of node currently pointed to by headofWHAT */
             headofWHAT=temp;             /* Point headofWHAT to the next node (will point to NULL if current node is last in the list) */
-        }while(temp != NULL);
+        } while (temp != NULL);
         reset_count++;
     }
 
     /* ------------------------------ If 'WHERE' linked-list is not empty (headofWHERE not pointing to NULL) --------------------------------- */
-    if (headofWHERE!=NULL){
+    if (headofWHERE!=NULL) {
         /* While not end of linked-list, delete/free memory of node pointed by headofWHERE currently */
         response_node *temp = headofWHERE;
-        do{
+        do {
             printf("\nRemoving Node '%s' '%s\n'",temp->intent,temp->entity);
             temp = temp->next;
             free(headofWHERE);                       /* Free memory allocation of node currently pointed to by headofWHERE */
             headofWHERE=temp;           /* Point headofWHERE to the next node (will point to NULL if current node is last in the list) */
-        }while(temp != NULL);
+        } while (temp != NULL);
         reset_count++;
     }
 
     if (reset_count == 0) {
     	snprintf(response, n, "There is nothing to reset.");
     } else {
-    	snprintf(response, n, "Knowledge Base has been resetted successfully.");
+    	snprintf(response, n, "Chatbot reset.");
     }
 
 	return 0;
