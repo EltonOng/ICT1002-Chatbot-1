@@ -294,6 +294,38 @@ void knowledge_reset() {
  */
 void knowledge_write(FILE *f) {
 	
-	/* to be implemented */
+	if (headofWHAT!=NULL){    
+            response_node *temp = headofWHAT;
+            fprintf(f,"[%s]\n", "what");
+            while (temp != NULL){
+                fprintf(f,"%s=", temp->entity);
+                fprintf(f,"%s", temp->response);
+                temp = temp->next;
+            }
+        }
+
+        fprintf(f,"%s", "\n");
+
+        if (headofWHO!=NULL){    
+            response_node *temp = headofWHO;
+            fprintf(f,"[%s]\n", "who");
+            while (temp != NULL){
+                fprintf(f,"%s=", temp->entity);
+                fprintf(f,"%s", temp->response);
+                temp = temp->next;
+            }
+        }
+
+        fprintf(f,"%s", "\n");
+
+        if (headofWHERE!=NULL){    
+            response_node *temp = headofWHERE;
+            fprintf(f,"[%s]\n", "where");
+            while (temp != NULL){
+                fprintf(f,"%s=", temp->entity);
+                fprintf(f,"%s", temp->response);
+                temp = temp->next;
+            }
+        }
 	
 }

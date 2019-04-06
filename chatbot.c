@@ -415,7 +415,7 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
         /* While not end of linked-list, delete/free memory of node pointed by headofWHO currently */
         response_node *temp = headofWHO;
         do{
-            printf("\nRemoving Node '%s' '%s'\n",temp->intent,temp->entity);
+            printf("\nRemoving Node '%s' '%s'",temp->intent,temp->entity);
             temp = temp->next;
             free(headofWHO);                        /* Free memory allocation of node currently pointed to by headofWHO */
             headofWHO=temp;              /* Point headofWHO to the next node (will point to NULL if current node is last in the list) */
@@ -428,7 +428,7 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
         /* While not end of linked-list, delete/free memory of node pointed by headofWHAT currently */
         response_node *temp = headofWHAT;
         do{
-            printf("\nRemoving Node '%s' '%s'\n",temp->intent,temp->entity);
+            printf("\nRemoving Node '%s' '%s'",temp->intent,temp->entity);
             temp = temp->next;
             free(headofWHAT);                        /* Free memory allocation of node currently pointed to by headofWHAT */
             headofWHAT=temp;             /* Point headofWHAT to the next node (will point to NULL if current node is last in the list) */
@@ -441,7 +441,7 @@ int chatbot_do_reset(int inc, char *inv[], char *response, int n) {
         /* While not end of linked-list, delete/free memory of node pointed by headofWHERE currently */
         response_node *temp = headofWHERE;
         do{
-            printf("\nRemoving Node '%s' '%s'\n",temp->intent,temp->entity);
+            printf("\nRemoving Node '%s' '%s'",temp->intent,temp->entity);
             temp = temp->next;
             free(headofWHERE);                       /* Free memory allocation of node currently pointed to by headofWHERE */
             headofWHERE=temp;           /* Point headofWHERE to the next node (will point to NULL if current node is last in the list) */
@@ -498,56 +498,27 @@ int chatbot_do_save(int inc, char *inv[], char *response, int n) {
 
     if (inv[1] == NULL){
         strcpy(response,"No file inputted!");                   // Error Response for No Input for File
-    }else{
+    }
+    else if (headofWHERE == NULL || headofWHAT == NULL || headofWHO == NULL) {
+    	strcpy(response, "Database is empty!");
+    }
+    else{
 
     	strcpy(filename, inv[1]);
 
     	int num;
    		FILE *fptr;
    		fptr = fopen(filename, "w");
-    	if(fptr == NULL){
-			printf("Error!");   
-			exit(1);             
+    	if(fptr == NULL){  
+			strcpy(response,"Error creating file");             
 		}
-
-    	if (headofWHAT!=NULL){    
-			response_node *temp = headofWHAT;
-			fprintf(fptr,"[%s]\n", "what");
-			while (temp != NULL){
-				//printf("Intentt:'%s'\n", temp-> intent);
-				//printf("Entityy:'%s'\n", temp-> entity);
-				//printf("Responsee:'%s'\n", temp-> response);
-				fprintf(fptr,"%s=", temp->entity);
-				fprintf(fptr,"%s", temp->response);
-				temp = temp->next;
-			}
-		}
-
-		fprintf(fptr,"%s", "\n");
-
-    	if (headofWHO!=NULL){    
-			response_node *temp = headofWHO;
-			fprintf(fptr,"[%s]\n", "who");
-			while (temp != NULL){
-				fprintf(fptr,"%s=", temp->entity);
-				fprintf(fptr,"%s", temp->response);
-				temp = temp->next;
-			}
-		}
-
-		fprintf(fptr,"%s", "\n");
-
-		if (headofWHERE!=NULL){    
-			response_node *temp = headofWHERE;
-			fprintf(fptr,"[%s]\n", "where");
-			while (temp != NULL){
-				fprintf(fptr,"%s=", temp->entity);
-				fprintf(fptr,"%s", temp->response);
-				temp = temp->next;
-			}
+		else {
+			knowledge_write(fptr);
+    		snprintf(response, n, "My knowledge has been saved to %s.", filename);
 		}
 
 		fclose(fptr);
+		
 
 
     }
