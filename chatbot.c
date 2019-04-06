@@ -186,7 +186,7 @@ int chatbot_do_load(int inc, char *inv[], char *response, int n) {
         if (file = fopen(inv[1], "r")){							// Open File for Reading
         	linecount = knowledge_read(file);					// Get number of entries inserted
             fclose(file);										// Close file pointer
-           	snprintf(response, n,"Read %d responses from %s\n", linecount, inv[1]);
+           	snprintf(response, n,"Read %d responses from %s", linecount, inv[1]);
         }
         else{
             strcpy(response,"File not found!");					// Error response for File Not Found
