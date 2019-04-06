@@ -39,7 +39,7 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
         if (headofWHO!=NULL){                                       /* If a linked-list already exists */
             whoIterator = headofWHO;                                /* Point the whoIterator to head of 'WHO' linked-list */
             do{                                                     /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
-                if (strcmp(whoIterator->entity,entity)==0){         /* If a node with the same entity exists */
+                if (compare_token(whoIterator->entity,entity)==0){         /* If a node with the same entity exists */
                     strncpy(response, whoIterator->response, n);        /* Copy it to the response buffer */
                     return KB_OK;                                   /* After copying to response buffer, return KB_OK (0) */
                 }
@@ -60,7 +60,7 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
         if (headofWHAT!=NULL){                                      /* If a linked-list already exists */
             whatIterator = headofWHAT;                              /* Point the whatIterator to head of 'WHAT' linked-list */
             do{                                                     /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
-                if (strcmp(whatIterator->entity,entity)==0){        /* If a node with the same entity exists */
+                if (compare_token(whatIterator->entity,entity)==0){        /* If a node with the same entity exists */
                     strncpy(response, whatIterator->response, n);       /* Copy it to the response buffer */
                     return KB_OK;                                   /* After copying to response buffer, return KB_OK (0) */
                 }
@@ -81,7 +81,7 @@ int knowledge_get(const char *intent, const char *entity, char *response, int n)
         if (headofWHERE!=NULL){                                     /* If a linked-list already exists */
             whereIterator = headofWHERE;                            /* Point the whereIterator to head of 'WHERE' linked-list */
             do{                                                     /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
-                if (strcmp(whereIterator->entity,entity)==0){       /* If a node with the same entity exists */
+                if (compare_token(whereIterator->entity,entity)==0){       /* If a node with the same entity exists */
                     strncpy(response, whereIterator->response, n);      /* Copy it to the response buffer */
                     return KB_OK;                                   /* After copying to response buffer, return KB_OK (0) */
                 }
@@ -142,7 +142,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
             if (abs(get_code)==0){
                 whoIterator = headofWHO;                                     /* Point the whoIterator to head of 'WHO' linked-list */
                 do{                                                          /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
-                    if (strcmp(whoIterator->entity,entity)==0){              /* If a node with the same Entity exists */
+                    if (compare_token(whoIterator->entity,entity)==0){              /* If a node with the same Entity exists */
                         strncpy(whoIterator->response, response, MAX_RESPONSE);        /* Overwrite the existing response */
                         printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n",intent, entity, response);
                         return KB_OK;                                        /* Return code 'KB_OK', which is of value 0 */
@@ -177,7 +177,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
             if (abs(get_code) == 0) {
                 whatIterator = headofWHAT;                                    /* Point the whatIterator to head of 'WHAT' linked-list */
                 do {                                                          /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
-                    if (strcmp(whatIterator->entity, entity) == 0) {          /* If a node with the same Entity exists */
+                    if (compare_token(whatIterator->entity, entity) == 0) {          /* If a node with the same Entity exists */
                         strncpy(whatIterator->response, response, MAX_RESPONSE);        /* Overwrite the existing response */
                         printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n", intent, entity, response);
                         return KB_OK;                                         /* Return code 'KB_OK', which is of value 0 */
@@ -212,7 +212,7 @@ int knowledge_put(const char *intent, const char *entity, const char *response) 
             if (abs(get_code) == 0) {
                 whereIterator = headofWHERE;                                  /* Point the whereIterator to head of 'WHERE' linked-list */
                 do {                                                          /* While no match is found, Make the iterator point to the next node (if last node, it will point to NULL) */
-                    if (strcmp(whereIterator->entity, entity) ==
+                    if (compare_token(whereIterator->entity, entity) ==
                         0) {          /* If a node with the same Entity exists */
                         strncpy(whereIterator->response, response, MAX_RESPONSE);        /* Overwrite the existing response */
                         printf("\nUpdated Intent: '%s'\nUpdated Entity: '%s'\nUpdated Response: '%s'\n", intent, entity, response);
