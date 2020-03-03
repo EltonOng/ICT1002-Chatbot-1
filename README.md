@@ -24,4 +24,13 @@ WHO [IS] | name | Describe the person of this name.
 ## Prerequisites
 - C Compiler
 
-Done for requirements of module ICT1002: Programming Fundamentals
+# License and Copyright Information
+Repository content (Excluding third-party resources, see below) shall be released under the [MIT License](LICENSE).
+<br /><br />
+This project is an assignment submission for the fulfillment of the module ICT1002 Programming Fundementals.
+<br /><br />
+As such, copyright and any rights to this project shall belong to the project contributors as well as to [Singapore Institute of Technology (SIT)](https://www.singaporetech.edu.sg/).
+<br /><br />
+Plagiarism is a serious offence, and SIT's policy explicitly forbids such acts. Any submission caught with plagiarised work shall receive zero marks for their submission.
+<br /><br />
+Any third-party resources used for this project may be reused in accordance to their license and/ or terms and conditions.
